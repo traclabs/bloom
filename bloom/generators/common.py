@@ -123,7 +123,8 @@ def resolve_rosdep_key(
     os_version,
     ros_distro=None,
     ignored=None,
-    retry=True
+    retry=True,
+    local_deps=False
 ):
     ignored = ignored or []
     ctx = create_default_installer_context()
@@ -141,6 +142,11 @@ def resolve_rosdep_key(
         debug(traceback.format_exc())
         if key in ignored:
             return None, None, None
+
+        if local_deps:
+            resolved_key = ["ros-" + ros_distro + "-" + key.replace("_", "-")]
+            return resolved_key,None,None
+        
         if isinstance(exc, KeyError):
             error("Could not resolve rosdep key '{0}'".format(key))
             returncode = code.GENERATOR_NO_SUCH_ROSDEP_KEY
@@ -171,7 +177,8 @@ def resolve_dependencies(
     os_version,
     ros_distro=None,
     peer_packages=None,
-    fallback_resolver=None
+    fallback_resolver=None,
+    local_deps=False
 ):
     ros_distro = ros_distro or DEFAULT_ROS_DISTRO
     peer_packages = peer_packages or []
@@ -182,7 +189,7 @@ def resolve_dependencies(
     for key in keys:
         resolved_key, installer_key, default_installer_key = \
             resolve_rosdep_key(key, os_name, os_version, ros_distro,
-                               peer_packages, retry=True)
+                               peer_packages, retry=True, local_deps=local_deps)
         # Do not compare the installer key here since this is a general purpose function
         # They installer is verified in the OS specific generator, when the keys are pre-checked.
         if resolved_key is None:

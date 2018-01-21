@@ -76,6 +76,7 @@ def prepare_arguments(parser):
     add('--os-version', help='OS version or codename, e.g. precise, wheezy')
     add('--ros-distro', help="ROS distro, e.g. %s (used for rosdep)" % get_distro_list_prompt())
     add('--native', action='store_true', help="generate native package")
+    add('--assume-local-deps', action='store_true', help="assume local deps exist when not on rosdep")
     return parser
 
 
@@ -123,7 +124,7 @@ def main(args=None, get_subs_fn=None):
     for path, pkg in pkgs_dict.items():
         template_files = None
         try:
-            subs = get_subs_fn(pkg, os_name, os_version, ros_distro, args.native)
+            subs = get_subs_fn(pkg, os_name, os_version, ros_distro, args.native, args.assume_local_deps)
             if _place_template_files:
                 # Place template files
                 place_template_files(path, pkg.get_build_type())

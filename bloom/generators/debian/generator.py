@@ -289,7 +289,8 @@ def generate_substitutions_from_package(
     peer_packages=None,
     releaser_history=None,
     fallback_resolver=None,
-    native=False
+    native=False,
+    local_deps=False
 ):
     peer_packages = peer_packages or []
     data = {}
@@ -320,7 +321,7 @@ def generate_substitutions_from_package(
     resolved_deps = resolve_dependencies(unresolved_keys, os_name,
                                          os_version, ros_distro,
                                          peer_packages + [d.name for d in package.replaces + package.conflicts],
-                                         fallback_resolver)
+                                         fallback_resolver, local_deps)
     data['Depends'] = sorted(
         set(format_depends(depends, resolved_deps))
     )
